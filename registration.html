@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Form usage</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <style>
+      
+        table, th, td {
+          border : 1 px solid white;
+        }
+
+    </style>
+
+</head>
+
+<body class="bg-primary text-white p-3 ">
+    <div class="heading-con">
+        <h1 class="text-center main-heading">Form Details</h1>
+        <div class="underline"></div>
+    </div>
+
+    <form id="form-details">
+        <div class="container d-flex flex-column">
+            <label for="name" class="d-block">Username:</label>
+            <input required type="text" id="name" name="name" class="border-0 rounded p-1 pl-2 pr-2 ">
+        </div>
+
+
+        <div class="container d-flex flex-column mt-3">
+            <label for="email" class="d-block">Email</label>
+            <input required type="email" id="email" name="email" class="border-0 rounded p-1 pl-2 pr-2 ">
+        </div>
+
+
+        <div class="container d-flex flex-column mt-3">
+            <label for="password" class="d-block">Password</label>
+            <input required type="password" id="password" name="password" class="border-0 rounded p-1 pl-2 pr-2 ">
+        </div>
+
+
+        <div class="container d-flex flex-column mt-3">
+            <label for="dob" class="d-block">Date of Birth</label>
+            <input required type="date" id="dob" class="border-0 rounded p-1 pl-2 pr-2 ">
+        </div>
+
+        <div class="container d-flex mt-3 align-items-center">
+            <input style="width:20px;height:20px" type="checkbox" id="accept" class="mr-2 border-0 rounded p-1 pl-2 pr-2 ">
+            <label for="accept" class="d-block">Accept Terms & Conditions</label>
+
+        </div>
+
+        <div class="container d-flex flex-row mt-3 justify-content-center">
+            <button type="submit" class="font-weight-bold pl-4 pr-4  btn btn-secondary" id='demo'>Try it</button>
+        </div>
+
+        <div>
+      <h2 style = "text-decoration: underline;">User Entries</h2>
+      <div id = "user-entries">
+        
+      </div>
+    </div>
+
+  </form>
+
+
+    <script>
+      let email = document.getElementById('email');
+      email.addEventListener('input',()=> email_validation(email));
+
+      var x_obj = document.getElementById("dob");
+      
+      x_obj.addEventListener('input', ()=> myFunction(x_obj));
+
+      function email_validation(ele){
+        if(ele.validity.typeMismatch){
+          ele.setCustomValidity("Format of email is not correct");
+          ele.reportValidity();
+        }
+        else{
+          ele.setCustomValidity("");
+        }
+      }
+
+      
+
+
+      function Timediff(user_dob, today) {  
+        const date1_to_utc = Date.UTC(user_dob.getFullYear(), user_dob.getMonth(), user_dob.getDate());
+        const date2_to_utc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+          day = 1000*3600*24;
+        return(date2_to_utc - date1_to_utc)/day
+}
+      
+      
+      function myFunction(x_obj) {
+        
+        let user_dob = new Date(x_obj.value);
+        let today_date = new Date();
+        //let year1 = user_dob.getFullYear();
+        
+        //let year2 = today_date.getFullYear();
+        time_difference = Timediff(user_dob,today_date);
+
+        console.log(time_difference);
+        if ((time_difference < 6570) || (time_difference>=20075)){
+          x_obj.setCustomValidity("You does not belong to 18 - 55 age group");
+          x_obj.reportValidity();
+      }
+      else{
+        x_obj.setCustomValidity('');
+      }
+      
+}
+
+     
+
+
+//********  Form details local storage *********************
+
+
+      let retrieve_data = () => {
+          let entries = localStorage.getItem("user_entry_details");
+          if(entries){
+            entries = JSON.parse(entries);
+          }
+          else{
+            entries = [];
+          }
+          return entries;
+        }
+
+
+       let formdetails = document.getElementById("form-details");
+
+        let users = retrieve_data();
+
+        let displayEntries = () => {
+          let entries = retrieve_data();
+
+          let table_entries = entries.map((entry)=>{
+            let namecell = `<td> ${entry.name} </td>`;
+            let emailcell = `<td> ${entry.email} </td>`;
+            let passwordcell = `<td> ${entry.password} </td>`;
+            let dobcell = `<td> ${entry.dob} </td>`;
+            let acceptedcell = `<td> ${entry.accepted} </td>`;
+
+            let row = `<tr>${namecell} ${emailcell} ${passwordcell} ${dobcell} ${acceptedcell}</tr>`;
+            return row;
+          }).join("\n");
+
+
+
+          let table = `<table style = 'width: 50%;border: 1px solid white;'><tr style = 'border: 1px solid white'><th>Name</th><th>Email</th><th>Password</th><th>Dob</th><th>Accepted terms?</th></tr> ${table_entries} </table>`;
+          let details = document.getElementById("user-entries");
+          details.innerHTML = table;
+        }
+
+        let save_details = (event) => {
+          event.preventDefault();
+          let name = document.getElementById("name").value;
+          console.log(name);
+          let email = document.getElementById("email").value;
+          let password = document.getElementById("password").value;
+          let dob = document.getElementById("dob").value;
+          let accepted = document.getElementById("accept").checked;
+
+          let entry_obj = {
+             name,
+             email,
+             password,
+             dob,
+             accepted
+          };
+
+          users.push(entry_obj);
+          localStorage.setItem("user_entry_details", JSON.stringify(users));
+
+          displayEntries();
+
+        };
+        
+        
+        formdetails.addEventListener('submit', save_details);
+        
+        displayEntries();
+
+        
+        
+
+
+    </script>
+
+
+  
+
+</body>
+
+</html>
